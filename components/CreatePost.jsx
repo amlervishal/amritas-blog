@@ -5,9 +5,7 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { getFirestore, collection, addDoc } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
-import dynamic from 'next/dynamic';
-
-const MDEditor = dynamic(() => import('@uiw/react-md-editor'), { ssr: false });
+import ContentEditable from 'react-contenteditable';
 import { generateMetaDescription } from "../utils/metaUtils"
 
 const CreatePost = () => {
@@ -18,6 +16,14 @@ const CreatePost = () => {
   const router = useRouter();
   const auth = getAuth();
   const db = getFirestore();
+
+  const applyFormat = (command, value = null) => {
+    document.execCommand(command, false, value);
+  };
+
+  const handleContentChange = (e) => {
+    setContent(e.target.value);
+  };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -74,14 +80,68 @@ const CreatePost = () => {
             className="w-full p-2 border rounded"
             placeholder="https://example.com/image.jpg"
           />
+          <p className="text-xs text-gray-500 mt-1 font-Primary">
+            💡 For Pexels images: Right-click the image → "Copy image address"
+            <br />
+            Example: https://images.pexels.com/photos/1563356/pexels-photo-1563356.jpeg
+          </p>
         </div>
         <div>
           <label htmlFor="content" className="block font-Primary mb-1">Content</label>
-          <MDEditor
-            value={content}
-            onChange={(val) => setContent(val || '')}
-            height={300}
-            data-color-mode="light"
+
+          {/* Editor Toolbar */}
+          <div className="border border-gray-300 border-b-0 rounded-t-lg bg-gray-50 p-2 flex gap-2">
+            <button
+              type="button"
+              onClick={() => applyFormat('bold')}
+              className="px-3 py-1 border rounded text-sm hover:bg-gray-200 font-bold"
+            >
+              B
+            </button>
+            <button
+              type="button"
+              onClick={() => applyFormat('italic')}
+              className="px-3 py-1 border rounded text-sm hover:bg-gray-200 italic"
+            >
+              I
+            </button>
+            <button
+              type="button"
+              onClick={() => applyFormat('underline')}
+              className="px-3 py-1 border rounded text-sm hover:bg-gray-200 underline"
+            >
+              U
+            </button>
+            <button
+              type="button"
+              onClick={() => applyFormat('formatBlock', 'h1')}
+              className="px-3 py-1 border rounded text-sm hover:bg-gray-200"
+            >
+              H1
+            </button>
+            <button
+              type="button"
+              onClick={() => applyFormat('formatBlock', 'h2')}
+              className="px-3 py-1 border rounded text-sm hover:bg-gray-200"
+            >
+              H2
+            </button>
+            <button
+              type="button"
+              onClick={() => applyFormat('insertUnorderedList')}
+              className="px-3 py-1 border rounded text-sm hover:bg-gray-200"
+            >
+              • List
+            </button>
+          </div>
+
+          {/* Rich Text Editor */}
+          <ContentEditable
+            html={content}
+            onChange={handleContentChange}
+            className="w-full p-3 border border-gray-300 rounded-b-lg font-Primary text-sm min-h-[300px] focus:outline-none focus:border-blue-500"
+            style={{ minHeight: '300px' }}
+            placeholder="Write your content here..."
           />
         </div>
         <div className="pt-8">

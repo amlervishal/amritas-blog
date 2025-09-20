@@ -104,9 +104,20 @@ const Comments = ({ postId, user }) => {
           </button>
         </form>
       ) : (
-        <p className="text-gray-600 font-Primary text-sm mb-6">
-          Please sign in to leave a comment.
-        </p>
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
+          <p className="text-gray-700 font-Primary text-sm mb-2">
+            💬 Want to join the conversation?
+          </p>
+          <p className="text-gray-600 font-Primary text-sm mb-3">
+            Sign in with your Google account to leave comments and engage with other readers.
+          </p>
+          <a
+            href="/signin"
+            className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-Primary text-sm px-4 py-2 rounded-full transition-colors duration-200"
+          >
+            Sign in to comment
+          </a>
+        </div>
       )}
 
       {/* Comments list */}

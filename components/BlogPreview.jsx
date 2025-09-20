@@ -40,8 +40,12 @@ const BlogPreview = ({ user, id }) => {
   const metaTags = getMetaTags(post);
   const currentUrl = typeof window !== 'undefined' ? window.location.href : '';
 
-  // Remove duplicate title from content
-  const processedContent = post.content ? post.content.replace(/<h[1-6][^>]*>.*?<\/h[1-6]>/gi, '') : '';
+  // Just use the content as-is since we're using a rich text editor now
+  const processedContent = post.content || '';
+
+  // Debug: Log the content to see what we're getting
+  console.log('Post content:', post.content);
+  console.log('Processed content:', processedContent);
 
   return (
     <div className="container flex flex-col content-center items-center px-4">
@@ -50,7 +54,7 @@ const BlogPreview = ({ user, id }) => {
         <img
           src={post.imageUrl || "/default-image.png"}
           alt={post.title}
-          className="w-full object-cover mb-4 rounded-lg brightness-90"
+          className="w-full lg:h-96 object-cover mb-4 rounded-lg brightness-90"
         />
         <div className='flex flex-col md:px-0 lg:px-5'>
           <h1 className="font-Logo text-3xl font-light leading-relaxed mb-3">{post.title}</h1>
@@ -66,15 +70,17 @@ const BlogPreview = ({ user, id }) => {
         </div>
       </div>
 
-      <div
-        className="mb-8 md:mx-0 lg:mx-60 md:px-0 lg:px-5 font-Primary prose max-w-none [&>p:first-child]:first-letter:font-bold [&>p:first-child]:first-letter:text-lg"
-        dangerouslySetInnerHTML={{ __html: processedContent }}
-      />
-      <Comments postId={id} user={user} />
-      <div className="flex flex-col justify-between items-center px-5 gap-2">
-        <Link href="/" className="text-slate-700 text-xs font-Primary border-solid border rounded-full border-slate-600 hover:border-rose-500 tracking-widest hover:text-rose-500 md:text-base px-5 py-0">
-          Back to Home
-        </Link>
+      <div className='md:mx-0 lg:mx-60 md:px-0 lg:px-5'>
+        <div
+          className="mb-8 font-Primary prose max-w-none [&>p:first-child]:first-letter:font-bold [&>p:first-child]:first-letter:text-lg"
+          dangerouslySetInnerHTML={{ __html: processedContent }}
+        />
+        <Comments postId={id} user={user} />
+        <div className="flex flex-col justify-between items-center gap-2">
+          <Link href="/" className="text-slate-700 text-xs font-Primary border-solid border rounded-full border-slate-600 hover:border-rose-500 tracking-widest hover:text-rose-500 md:text-base px-5 py-0">
+            Back to Home
+          </Link>
+        </div>
       </div>
     </div>
   );

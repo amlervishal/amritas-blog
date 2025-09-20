@@ -4,9 +4,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { getFirestore, doc, getDoc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
-import dynamic from 'next/dynamic';
-
-const MDEditor = dynamic(() => import('@uiw/react-md-editor'), { ssr: false });
+import ContentEditable from 'react-contenteditable';
 import { generateMetaDescription } from "../utils/metaUtils"
 
 
@@ -52,6 +50,12 @@ const EditPost = () => {
         setError('You must be logged in to edit a post');
         return;
       }
+
+      // Debug: Log what we're trying to save
+      console.log('Saving content:', content);
+      console.log('Content type:', typeof content);
+      console.log('Content length:', content?.length);
+
       const docRef = doc(db, 'posts', id);
       await updateDoc(docRef, {
         title,
@@ -66,7 +70,7 @@ const EditPost = () => {
       router.push(`/post/${id}`);
     } catch (err) {
       setError('An error occurred while updating the post');
-      // console.error('Error updating post:', err);
+      console.error('Error updating post:', err);
     }
   };
 
@@ -87,6 +91,13 @@ const EditPost = () => {
     }
   };
 
+  const applyFormat = (command, value = null) => {
+    document.execCommand(command, false, value);
+  };
+
+  const handleContentChange = (e) => {
+    setContent(e.target.value);
+  };
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -136,11 +147,60 @@ const EditPost = () => {
         )}
         <div>
           <label htmlFor="content" className="block mb-1">Content</label>
-          <MDEditor
-            value={content}
-            onChange={(val) => setContent(val || '')}
-            height={300}
-            data-color-mode="light"
+
+          {/* Editor Toolbar */}
+          <div className="border border-gray-300 border-b-0 rounded-t-lg bg-gray-50 p-2 flex gap-2">
+            <button
+              type="button"
+              onClick={() => applyFormat('bold')}
+              className="px-3 py-1 border rounded text-sm hover:bg-gray-200 font-bold"
+            >
+              B
+            </button>
+            <button
+              type="button"
+              onClick={() => applyFormat('italic')}
+              className="px-3 py-1 border rounded text-sm hover:bg-gray-200 italic"
+            >
+              I
+            </button>
+            <button
+              type="button"
+              onClick={() => applyFormat('underline')}
+              className="px-3 py-1 border rounded text-sm hover:bg-gray-200 underline"
+            >
+              U
+            </button>
+            <button
+              type="button"
+              onClick={() => applyFormat('formatBlock', 'h1')}
+              className="px-3 py-1 border rounded text-sm hover:bg-gray-200"
+            >
+              H1
+            </button>
+            <button
+              type="button"
+              onClick={() => applyFormat('formatBlock', 'h2')}
+              className="px-3 py-1 border rounded text-sm hover:bg-gray-200"
+            >
+              H2
+            </button>
+            <button
+              type="button"
+              onClick={() => applyFormat('insertUnorderedList')}
+              className="px-3 py-1 border rounded text-sm hover:bg-gray-200"
+            >
+              • List
+            </button>
+          </div>
+
+          {/* Rich Text Editor */}
+          <ContentEditable
+            html={content}
+            onChange={handleContentChange}
+            className="w-full p-3 border border-gray-300 rounded-b-lg font-Primary text-sm min-h-[300px] focus:outline-none focus:border-blue-500"
+            style={{ minHeight: '300px' }}
+            placeholder="Write your content here..."
           />
         </div>
         <div className="flex justify-between pt-8">
