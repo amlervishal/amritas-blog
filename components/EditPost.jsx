@@ -4,8 +4,9 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
 import { getFirestore, doc, getDoc, updateDoc, deleteDoc } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
+import dynamic from 'next/dynamic';
+
+const MDEditor = dynamic(() => import('@uiw/react-md-editor'), { ssr: false });
 import { generateMetaDescription } from "../utils/metaUtils"
 
 
@@ -17,7 +18,6 @@ const EditPost = () => {
   const [isLoading, setIsLoading] = useState(true);
   const { id } = useParams();
   const router = useRouter();
-  const quillRef = useRef();
   const auth = getAuth();
   const db = getFirestore();
 
@@ -87,22 +87,6 @@ const EditPost = () => {
     }
   };
 
-  const modules = {
-    toolbar: [
-      [{ 'header': [1, 2, false] }],
-      ['bold', 'italic', 'underline', 'strike', 'blockquote'],
-      [{'list': 'ordered'}, {'list': 'bullet'}, {'indent': '-1'}, {'indent': '+1'}],
-      ['link', 'image'],
-      ['clean']
-    ],
-  };
-
-  const formats = [
-    'header',
-    'bold', 'italic', 'underline', 'strike', 'blockquote',
-    'list', 'bullet', 'indent',
-    'link', 'image'
-  ];
 
   if (isLoading) {
     return <div>Loading...</div>;
@@ -152,14 +136,11 @@ const EditPost = () => {
         )}
         <div>
           <label htmlFor="content" className="block mb-1">Content</label>
-          <ReactQuill 
-            ref={quillRef}
-            theme="snow"
+          <MDEditor
             value={content}
-            onChange={setContent}
-            modules={modules}
-            formats={formats}
-            className="h-64 mb-12"
+            onChange={(val) => setContent(val || '')}
+            height={300}
+            data-color-mode="light"
           />
         </div>
         <div className="flex justify-between pt-8">

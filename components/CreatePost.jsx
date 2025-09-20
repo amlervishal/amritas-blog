@@ -5,8 +5,9 @@ import { useRouter } from 'next/navigation';
 import Link from 'next/link';
 import { getFirestore, collection, addDoc } from 'firebase/firestore';
 import { getAuth } from 'firebase/auth';
-import ReactQuill from 'react-quill';
-import 'react-quill/dist/quill.snow.css';
+import dynamic from 'next/dynamic';
+
+const MDEditor = dynamic(() => import('@uiw/react-md-editor'), { ssr: false });
 import { generateMetaDescription } from "../utils/metaUtils"
 
 const CreatePost = () => {
@@ -15,7 +16,6 @@ const CreatePost = () => {
   const [imageUrl, setImageUrl] = useState('');
   const [error, setError] = useState('');
   const router = useRouter();
-  const quillRef = useRef();
   const auth = getAuth();
   const db = getFirestore();
 
@@ -46,22 +46,6 @@ const CreatePost = () => {
   };
 
 
-  const modules = {
-    toolbar: [
-      [{ 'header': [1, 2, false] }],
-      ['bold', 'italic', 'underline', 'strike', 'blockquote'],
-      [{'list': 'ordered'}, {'list': 'bullet'}, {'indent': '-1'}, {'indent': '+1'}],
-      ['link', 'image'],
-      ['clean']
-    ],
-  };
-
-  const formats = [
-    'header',
-    'bold', 'italic', 'underline', 'strike', 'blockquote',
-    'list', 'bullet', 'indent',
-    'link', 'image'
-  ];
 
 
   return (
@@ -93,14 +77,11 @@ const CreatePost = () => {
         </div>
         <div>
           <label htmlFor="content" className="block font-Primary mb-1">Content</label>
-          <ReactQuill 
-            ref={quillRef}
-            theme="snow"
+          <MDEditor
             value={content}
-            onChange={setContent}
-            modules={modules}
-            formats={formats}
-            className="h-64 mb-12"
+            onChange={(val) => setContent(val || '')}
+            height={300}
+            data-color-mode="light"
           />
         </div>
         <div className="pt-8">
