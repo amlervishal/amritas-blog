@@ -2,7 +2,23 @@ import './globals.css'
 
 export const metadata = {
   title: 'Pin Drop Silence...',
-  description: 'Blogs by Dr. Amrita Vohra',
+  description: 'Insightful blogs and thoughts by Dr. Amrita Vohra. Explore life, relationships, and personal growth through thoughtful writing.',
+  openGraph: {
+    title: 'Pin Drop Silence',
+    description: 'Insightful blogs and thoughts by Dr. Amrita Vohra. Explore life, relationships, and personal growth through thoughtful writing.',
+    type: 'website',
+    siteName: 'Pin Drop Silence',
+    locale: 'en_US',
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Pin Drop Silence',
+    description: 'Insightful blogs and thoughts by Dr. Amrita Vohra. Explore life, relationships, and personal growth through thoughtful writing.',
+  },
+  robots: {
+    index: true,
+    follow: true,
+  },
 }
 
 export default function RootLayout({ children }) {
