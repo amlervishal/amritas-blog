@@ -4,7 +4,6 @@
 @import "tailwindcss";
 
 /* Import the exact CSS from the original project */
-@import 'react-quill/dist/quill.snow.css';
 
 html {
   @apply text-gray-600;

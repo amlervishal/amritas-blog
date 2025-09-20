@@ -4,7 +4,6 @@ import React, { useState, useEffect } from 'react';
 import Link from 'next/link';
 import { getPost } from '../services/api';
 import Comments from './Comments';
-import { Helmet } from 'react-helmet-async';
 import { getMetaTags, generateMetaDescription } from '../utils/metaUtils';
 import ShareButton from './ShareButton';
 
@@ -46,32 +45,6 @@ const BlogPreview = ({ user, id }) => {
 
   return (
     <div className="container flex flex-col content-center items-center px-4">
-      <Helmet>
-        <title>{post.title} | Pin Drop Silence</title>
-        <meta name="description" content={metaTags.description} />
-
-        {/* Open Graph / Facebook */}
-        <meta property="og:type" content="article" />
-        <meta property="og:url" content={currentUrl} />
-        <meta property="og:title" content={post.title} />
-        <meta property="og:description" content={metaTags.description} />
-        <meta property="og:image" content={post.imageUrl || metaTags.image} />
-        <meta property="og:site_name" content="Pin Drop Silence" />
-        <meta property="article:author" content="Dr. Amrita Vohra" />
-        <meta property="article:published_time" content={post.createdAt?.toDate()?.toISOString()} />
-
-        {/* Twitter */}
-        <meta name="twitter:card" content="summary_large_image" />
-        <meta name="twitter:url" content={currentUrl} />
-        <meta name="twitter:title" content={post.title} />
-        <meta name="twitter:description" content={metaTags.description} />
-        <meta name="twitter:image" content={post.imageUrl || metaTags.image} />
-
-        {/* Additional SEO */}
-        <meta name="keywords" content={metaTags.keywords} />
-        <meta name="author" content="Dr. Amrita Vohra" />
-        <link rel="canonical" href={currentUrl} />
-      </Helmet>
   
       <div className='md:mx-0 lg:mx-60'>
         <img
