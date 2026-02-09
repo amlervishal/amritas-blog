@@ -11,8 +11,14 @@ const truncateText = (text, wordLimit = 15) => {
 };
 
 const stripHtml = (html) => {
+  // Remove HTML comments (including MSO style definitions pasted from Word)
+  let cleaned = html.replace(/<!--[\s\S]*?-->/g, '');
+  // Remove <style> blocks and their contents
+  cleaned = cleaned.replace(/<style[\s\S]*?<\/style>/gi, '');
+  // Remove MSO conditional comments (e.g. <!--[if gte mso 9]>...<![endif]-->)
+  cleaned = cleaned.replace(/<!--\[if[\s\S]*?<!\[endif\]-->/gi, '');
   const tmp = document.createElement('DIV');
-  tmp.innerHTML = html;
+  tmp.innerHTML = cleaned;
   return tmp.textContent || tmp.innerText || '';
 };
 

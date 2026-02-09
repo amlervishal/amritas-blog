@@ -40,12 +40,43 @@ const BlogPreview = ({ user, id }) => {
   const metaTags = getMetaTags(post);
   const currentUrl = typeof window !== 'undefined' ? window.location.href : '';
 
-  // Just use the content as-is since we're using a rich text editor now
-  const processedContent = post.content || '';
-
-  // Debug: Log the content to see what we're getting
-  console.log('Post content:', post.content);
-  console.log('Processed content:', processedContent);
+  // Clean MSO/Word styles and comments from pasted content
+  const cleanMsoContent = (html) => {
+    let cleaned = html;
+    // Remove MSO conditional comments (<!--[if gte mso 9]>...<![endif]-->)
+    cleaned = cleaned.replace(/<!--\[if[\s\S]*?<!\[endif\]-->/gi, '');
+    // Remove HTML comments (including MSO style definitions)
+    cleaned = cleaned.replace(/<!--[\s\S]*?-->/g, '');
+    // Remove <style> blocks and their contents
+    cleaned = cleaned.replace(/<style[\s\S]*?<\/style>/gi, '');
+    // Remove <meta>, <link>, and <xml> tags from Word
+    cleaned = cleaned.replace(/<meta[^>]*>/gi, '');
+    cleaned = cleaned.replace(/<link[^>]*>/gi, '');
+    cleaned = cleaned.replace(/<\/?xml[^>]*>/gi, '');
+    // Remove Office namespace tags like <o:p>, <w:sdt>, etc.
+    cleaned = cleaned.replace(/<\/?\w+:[^>]*>/gi, '');
+    // Remove mso-* inline style properties
+    cleaned = cleaned.replace(/mso-[^;:"']+:[^;:"']+;?/gi, '');
+    // Remove font-family and font-size inline styles (Word overrides default fonts)
+    cleaned = cleaned.replace(/font-family:[^;:"']+;?/gi, '');
+    cleaned = cleaned.replace(/font-size:[^;:"']+;?/gi, '');
+    // Remove class="Mso*" attributes
+    cleaned = cleaned.replace(/\s*class="Mso[^"]*"/gi, '');
+    // Remove empty style attributes left after mso cleanup
+    cleaned = cleaned.replace(/\s*style="\s*"/gi, '');
+    // Remove Word-specific lang attributes
+    cleaned = cleaned.replace(/\s*lang="[^"]*"/gi, '');
+    // Remove empty <span> wrappers (Word adds many of these)
+    cleaned = cleaned.replace(/<span\s*>([\s\S]*?)<\/span>/gi, '$1');
+    // Collapse multiple <br> into paragraph breaks
+    cleaned = cleaned.replace(/(<br\s*\/?\s*>){2,}/gi, '</p><p>');
+    // Remove &nbsp; used as spacing (replace with regular space)
+    cleaned = cleaned.replace(/&nbsp;/gi, ' ');
+    // Clean up empty paragraphs
+    cleaned = cleaned.replace(/<p[^>]*>\s*<\/p>/gi, '');
+    return cleaned;
+  };
+  const processedContent = cleanMsoContent(post.content || '');
 
   return (
     <div className="container flex flex-col content-center items-center px-4">

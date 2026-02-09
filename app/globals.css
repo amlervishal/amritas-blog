@@ -27,8 +27,11 @@ html {
   max-width: none;
 }
 
+.prose p {
+  margin-bottom: 1em;
+  line-height: 1.75;
+}
+
 .prose img {
   margin: 0 auto;
 }
-
-/* Custom styles to match original */
