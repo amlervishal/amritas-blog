@@ -1,5 +1,5 @@
 import './globals.css'
-import { Playfair_Display, Cormorant_Garamond } from 'next/font/google'
+import { Playfair_Display, Cormorant_Garamond, Italiana } from 'next/font/google'
 import { AuthProvider } from '../hooks/useUser'
 import { SITE_URL, SITE_NAME, SITE_DESCRIPTION, DEFAULT_OG_IMAGE, AUTHOR_NAME } from '../lib/site'
 
@@ -16,6 +16,14 @@ const cormorant = Cormorant_Garamond({
   style: ['normal', 'italic'],
   display: 'swap',
   variable: '--font-cormorant',
+})
+
+// Seal monogram only; tiny subset, no preload needed above the fold text.
+const italiana = Italiana({
+  subsets: ['latin'],
+  weight: '400',
+  display: 'swap',
+  variable: '--font-seal',
 })
 
 export const viewport = {
@@ -58,7 +66,7 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={`${playfair.variable} ${cormorant.variable}`}>
+    <html lang="en" className={`${playfair.variable} ${cormorant.variable} ${italiana.variable}`}>
       <body>
         <a href="#main" className="sr-skip">Skip to content</a>
         <AuthProvider>{children}</AuthProvider>
