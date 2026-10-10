@@ -6,6 +6,7 @@ import ShareButton from '../../../components/ShareButton'
 import JsonLd from '../../../components/JsonLd'
 import { getPostById, getPostSummaries, getCommentsForPost } from '../../../lib/firestore'
 import { cleanMsoContent, unwrapHeadingParagraphs } from '../../../lib/content'
+import { sanitizePostHtml } from '../../../lib/sanitize'
 import { optimizeImage, imageSrcSet, ogImage } from '../../../lib/images'
 import { SITE_URL, SITE_NAME, AUTHOR_NAME, DEFAULT_OG_IMAGE } from '../../../lib/site'
 
@@ -59,7 +60,7 @@ export default async function PostPage({ params }) {
   ])
   if (!post) notFound()
 
-  const content = unwrapHeadingParagraphs(cleanMsoContent(post.content))
+  const content = sanitizePostHtml(unwrapHeadingParagraphs(cleanMsoContent(post.content)))
   const dropCap = /^[A-Za-z]/.test(content.replace(/<[^>]*>|&nbsp;|\s+/g, ' ').trim())
   const heroSrc = post.imageUrl || '/default-image.png'
   const url = `${SITE_URL}/post/${id}`
