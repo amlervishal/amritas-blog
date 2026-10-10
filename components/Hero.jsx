@@ -27,7 +27,7 @@ export default function Hero() {
         </h1>
         <p className="hero-tag">Between classrooms and life.</p>
         <div className="hero-cta">
-          <Link href="/blog" className="seal hero-seal" aria-label="Read the writings">PDS</Link>
+          <Link href="/blog" className="seal hero-seal" aria-label="Read the writings">AV</Link>
           <a href="#latest" className="hero-enter">
             Enter the quiet
             <svg width="12" height="8" viewBox="0 0 12 8" fill="none" stroke="currentColor" strokeWidth="1.5" aria-hidden="true"><path d="M1 1.5l5 5 5-5" /></svg>
