@@ -58,7 +58,7 @@ export default async function HomePage() {
     ],
   }
 
-  const [featured, ...rest] = posts
+  const featured = posts[0]
 
   return (
     <PageShell wide transparent posts={posts}>
@@ -77,7 +77,7 @@ export default async function HomePage() {
             <Link href="/blog" className="pill">All writings</Link>
           </div>
         </div>
-        <Posts posts={rest} />
+        <Posts posts={posts} />
       </section>
 
       <AboutStrip />
