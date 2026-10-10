@@ -86,3 +86,6 @@ error_log
 
 # TypeScript cache
 *.tsbuildinfo
+# Large source art / screenshots (kept outside the repo)
+art-src/*.png
+docs/redesign-shots/*.png
