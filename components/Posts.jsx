@@ -3,52 +3,44 @@ import ShareButton from './ShareButton'
 import OwnerLink from './OwnerLink'
 import { optimizeImage, imageSrcSet } from '../lib/images'
 
-const SIZES = '(min-width: 1024px) 33vw, (min-width: 768px) 50vw, 100vw'
+const SIZES = '(min-width: 1000px) 380px, (min-width: 640px) 50vw, 100vw'
 
-// Server component: renders lean post summaries (id, title, date, image, excerpt).
+// Server component: renders lean post summaries (id, title, date, image, excerpt) as essay cards.
 const Posts = ({ posts }) => {
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+    <ul className="cards">
       {posts.map((post, i) => {
         const src = post.imageUrl || '/default-image.png'
         return (
-          <div key={post.id} className="rounded-lg bg-gray-300/30 relative overflow-hidden shadow-lg">
-            <img
-              src={optimizeImage(src, { w: 800 })}
-              srcSet={imageSrcSet(src, [480, 800, 1200])}
-              sizes={SIZES}
-              width={800}
-              height={600}
-              alt={post.title}
-              loading={i < 3 ? 'eager' : 'lazy'}
-              fetchPriority={i === 0 ? 'high' : undefined}
-              decoding="async"
-              className="w-full h-96 object-cover brightness-75 scale-110 transition-all duration-300 hover:scale-100"
-            />
-
-            <div className="absolute top-0 right-0 p-8 text-right">
-              <Link href={`/post/${post.id}`} className="text-white drop-shadow font-Primary text-2xl font-medium hover:underline">
-                {post.title}
-              </Link>
-              <p className="text-gray-200 font-Primary py-1 text-sm">{post.date}</p>
-              <div className="pt-1">
+          <li key={post.id} className="card">
+            <Link href={`/post/${post.id}`} className="card-img" tabIndex={-1} aria-hidden="true">
+              <img
+                src={optimizeImage(src, { w: 800 })}
+                srcSet={imageSrcSet(src, [480, 800, 1200])}
+                sizes={SIZES}
+                width={800}
+                height={600}
+                alt=""
+                loading={i < 3 ? 'eager' : 'lazy'}
+                fetchPriority={i === 0 ? 'high' : undefined}
+                decoding="async"
+              />
+            </Link>
+            <div className="card-meta">
+              <span className="kicker red">{post.date}</span>
+              <span className="card-actions">
+                <OwnerLink href={`/edit/${post.id}`} className="card-edit">Edit</OwnerLink>
                 <ShareButton postId={post.id} title={post.title} />
-              </div>
-              <OwnerLink href={`/edit/${post.id}`} className="text-rose-600 hover:underline">
-                Edit
-              </OwnerLink>
+              </span>
             </div>
-
-            <div className="absolute bottom-0 left-0 p-8">
-              <p className="text-gray-50 font-Primary drop-shadow text-sm">{post.excerpt}</p>
-              <Link href={`/post/${post.id}`} className="text-white/60 drop-shadow font-Primary text-sm hover:text-rose-600 mt-2 inline-block">
-                Read more
-              </Link>
-            </div>
-          </div>
+            <h3><Link href={`/post/${post.id}`}>{post.title}</Link></h3>
+            <hr className="rule" />
+            <p className="excerpt">{post.excerpt}</p>
+            <Link href={`/post/${post.id}`} className="more" aria-label={`Read ${post.title}`}>Read the essay</Link>
+          </li>
         )
       })}
-    </div>
+    </ul>
   )
 }
 

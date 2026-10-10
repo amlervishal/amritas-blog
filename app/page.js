@@ -1,4 +1,8 @@
 import PageShell from '../components/PageShell'
+import Hero from '../components/Hero'
+import Feature from '../components/Feature'
+import AboutStrip from '../components/AboutStrip'
+import Link from 'next/link'
 import Posts from '../components/Posts'
 import CommentsSlider from '../components/CommentsSlider'
 import OwnerLink from '../components/OwnerLink'
@@ -54,21 +58,30 @@ export default async function HomePage() {
     ],
   }
 
+  const [featured, ...rest] = posts
+
   return (
-    <PageShell>
+    <PageShell wide transparent posts={posts}>
       <JsonLd data={jsonLd} />
-      <div>
-        <CommentsSlider comments={comments} />
-        <h1 className="text-xl text-center drop-shadow mb-4 mt-8 font-Logo">Recent Posts</h1>
-        <OwnerLink
-          href="/create"
-          wrapperClassName="my-8 text-center"
-          className="bg-rose-600 text-white font-Primary text-sm px-5 py-2 rounded-full"
-        >
-          Create New Post
-        </OwnerLink>
-        <Posts posts={posts} />
-      </div>
+      <Hero />
+      <Feature post={featured} />
+
+      <section className="section" id="writings" aria-labelledby="writings-title">
+        <div className="section-head">
+          <div>
+            <p className="kicker red">Writings</p>
+            <h2 id="writings-title" className="display">Recent reflections</h2>
+          </div>
+          <div style={{ display: 'flex', gap: 16, alignItems: 'center', flexWrap: 'wrap' }}>
+            <OwnerLink href="/create" className="pill red">Create new post</OwnerLink>
+            <Link href="/blog" className="pill">All writings</Link>
+          </div>
+        </div>
+        <Posts posts={rest} />
+      </section>
+
+      <AboutStrip />
+      <CommentsSlider comments={comments} />
     </PageShell>
   )
 }

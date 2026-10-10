@@ -86,64 +86,45 @@ const Comments = ({ postId, initialComments = [] }) => {
   };
 
   return (
-    <div className="mt-8 pt-8 border-t border-gray-200">
-      <h2 className="text-xl font-Primary font-semibold mb-4">Comments</h2>
+    <section className="comments" aria-labelledby="comments-title">
+      <h2 id="comments-title">Comments</h2>
 
-      {/* Comment form */}
       {user ? (
-        <form onSubmit={handleSubmit} className="mb-6">
+        <form onSubmit={handleSubmit} style={{ marginBottom: 32 }}>
           <textarea
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}
             placeholder="Write a comment..."
             aria-label="Write a comment"
-            className="w-full p-3 border border-gray-300 rounded-lg font-Primary text-sm"
             rows="3"
           />
-          <button
-            type="submit"
-            disabled={loading || !newComment.trim()}
-            className="mt-2 px-4 py-2 bg-rose-600 text-white rounded-full font-Primary text-sm disabled:opacity-50"
-          >
-            {loading ? 'Posting...' : 'Post Comment'}
+          <button type="submit" disabled={loading || !newComment.trim()} className="pill red" style={{ marginTop: 14 }}>
+            {loading ? 'Posting...' : 'Post comment'}
           </button>
         </form>
       ) : (
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-6">
-          <p className="text-gray-700 font-Primary text-sm mb-2">
-            💬 Want to join the conversation?
-          </p>
-          <p className="text-gray-600 font-Primary text-sm mb-3">
-            Sign in with your Google account to leave comments and engage with other readers.
-          </p>
-          <a
-            href="/signin"
-            className="inline-block bg-blue-600 hover:bg-blue-700 text-white font-Primary text-sm px-4 py-2 rounded-full transition-colors duration-200"
-          >
-            Sign in to comment
-          </a>
+        <div className="invite">
+          <p>Want to join the conversation? Sign in with your Google account to leave a comment and write back to the author.</p>
+          <a href="/signin" className="pill red">Sign in to comment</a>
         </div>
       )}
 
-      {/* Comments list */}
-      <div className="space-y-4">
+      <div>
         {comments.length === 0 ? (
-          <p className="text-gray-500 font-Primary text-sm">No comments yet. Be the first to comment!</p>
+          <p style={{ color: 'var(--ink-soft)', fontStyle: 'italic', fontSize: 21 }}>No comments yet. Be the first to write one.</p>
         ) : (
           comments.map((comment) => (
-            <div key={comment.id} className="bg-gray-50 p-4 rounded-lg mb-4 border max-w-full">
-              <div className="flex justify-between items-start mb-2">
-                <span className="font-Primary font-medium text-sm text-gray-800">{comment.authorName}</span>
-                <span className="text-gray-500 font-Primary text-xs flex-shrink-0 ml-4" suppressHydrationWarning>
-                  {comment.date || 'Just now'}
-                </span>
+            <article key={comment.id} className="comment-card">
+              <div style={{ display: 'flex', justifyContent: 'space-between', gap: 16, alignItems: 'baseline' }}>
+                <span className="who">{comment.authorName}</span>
+                <span className="when" suppressHydrationWarning>{comment.date || 'Just now'}</span>
               </div>
-              <p className="text-gray-700 font-Primary text-sm break-words">{comment.content || 'No comment text'}</p>
-            </div>
+              <p style={{ overflowWrap: 'anywhere' }}>{comment.content || 'No comment text'}</p>
+            </article>
           ))
         )}
       </div>
-    </div>
+    </section>
   );
 };
 

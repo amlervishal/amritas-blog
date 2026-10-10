@@ -20,7 +20,7 @@ export default function EditPage({ params }) {
 
   // Show loading while authentication state is being determined
   if (user === undefined) {
-    return <div>Loading...</div>
+    return <div className="pds-shell"><p className="kicker" style={{ padding: 120, textAlign: "center" }}>Loading...</p></div>
   }
 
   // If user is null (not authenticated), don't render anything (redirecting)
@@ -29,9 +29,9 @@ export default function EditPage({ params }) {
   }
 
   return (
-    <div className="flex flex-col min-h-screen bg-white bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px]">
+    <div className="pds-shell">
       <Navigation user={user} />
-      <main className="flex-grow container mx-auto px-4 pt-24 pb-24">
+      <main id="main" className="pds-main">
         <EditPost />
       </main>
       <Footer />

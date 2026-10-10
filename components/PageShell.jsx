@@ -1,12 +1,21 @@
 import Navigation from './Navigation'
 import Footer from './Footer'
+import { getPostSummaries } from '../lib/firestore'
 
 // Shared page chrome (server component; Navigation is a small client island).
-export default function PageShell({ children, mainClassName = 'pt-24 pb-24' }) {
+// `wide` removes the page gutter (full-bleed sections), `transparent` lets the nav sit over a hero.
+export default async function PageShell({ children, wide = false, transparent = false, posts }) {
+  let latestId
+  try {
+    const list = posts || (await getPostSummaries())
+    latestId = list[0]?.id
+  } catch {
+    latestId = undefined
+  }
   return (
-    <div className="flex flex-col min-h-screen bg-white bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px]">
-      <Navigation />
-      <main className={`flex-grow container mx-auto px-4 ${mainClassName}`}>{children}</main>
+    <div className="pds-shell">
+      <Navigation latestId={latestId} transparent={transparent} />
+      <main id="main" className={`pds-main${wide ? ' wide' : ''}`}>{children}</main>
       <Footer />
     </div>
   )

@@ -5,7 +5,7 @@ import Comments from '../../../components/Comments'
 import ShareButton from '../../../components/ShareButton'
 import JsonLd from '../../../components/JsonLd'
 import { getPostById, getPostSummaries, getCommentsForPost } from '../../../lib/firestore'
-import { cleanMsoContent } from '../../../lib/content'
+import { cleanMsoContent, unwrapHeadingParagraphs } from '../../../lib/content'
 import { optimizeImage, imageSrcSet, ogImage } from '../../../lib/images'
 import { SITE_URL, SITE_NAME, AUTHOR_NAME, DEFAULT_OG_IMAGE } from '../../../lib/site'
 
@@ -59,7 +59,8 @@ export default async function PostPage({ params }) {
   ])
   if (!post) notFound()
 
-  const content = cleanMsoContent(post.content)
+  const content = unwrapHeadingParagraphs(cleanMsoContent(post.content))
+  const dropCap = /^[A-Za-z]/.test(content.replace(/<[^>]*>|&nbsp;|\s+/g, ' ').trim())
   const heroSrc = post.imageUrl || '/default-image.png'
   const url = `${SITE_URL}/post/${id}`
 
@@ -79,41 +80,45 @@ export default async function PostPage({ params }) {
   }
 
   return (
-    <PageShell>
+    <PageShell wide>
       <JsonLd data={jsonLd} />
-      <article className="container flex flex-col content-center items-center px-4">
-        <div className="md:mx-0 lg:mx-60">
+      <article>
+        <div className="post-cover">
           <img
             src={optimizeImage(heroSrc, { w: 1600 })}
             srcSet={imageSrcSet(heroSrc, [640, 1000, 1600])}
-            sizes="(min-width: 1024px) 60vw, 100vw"
+            sizes="100vw"
             width={1600}
-            height={900}
+            height={686}
             alt={post.title}
             fetchPriority="high"
             decoding="async"
-            className="w-full aspect-[16/9] lg:aspect-auto lg:h-96 object-cover mb-4 rounded-lg brightness-90"
           />
-          <div className="flex flex-col md:px-0 lg:px-5">
-            <h1 className="font-Logo text-3xl font-light leading-relaxed mb-3">{post.title}</h1>
-            <div className="flex items-center justify-between mb-3">
-              <time dateTime={post.createdAt || undefined} className="font-Primary text-xs">{post.date}</time>
-              <ShareButton postId={id} title={post.title} />
-            </div>
+        </div>
+        <header className="post-head">
+          <p className="kicker red">An essay</p>
+          <h1 className="display">{post.title}</h1>
+          <div className="post-meta kicker">
+            <time dateTime={post.createdAt || undefined}>{post.date}</time>
+            <span className="dot" aria-hidden="true" />
+            <span>{AUTHOR_NAME}</span>
+            <ShareButton postId={id} title={post.title} />
           </div>
+        </header>
+
+        <div className={`essay${dropCap ? ' dropcap' : ''}`} dangerouslySetInnerHTML={{ __html: content }} />
+
+        <div className="blossom-divider" aria-hidden="true">
+          <picture>
+            <source srcSet="/art/sprig.avif" type="image/avif" />
+            <source srcSet="/art/sprig.webp" type="image/webp" />
+            <img src="/art/sprig.png" width={900} height={258} alt="" loading="lazy" decoding="async" />
+          </picture>
         </div>
 
-        <div className="md:mx-0 lg:mx-60 md:px-0 lg:px-5">
-          <div
-            className="mb-8 font-Primary prose max-w-none [&>p:first-child]:first-letter:font-bold [&>p:first-child]:first-letter:text-lg"
-            dangerouslySetInnerHTML={{ __html: content }}
-          />
-          <Comments postId={id} initialComments={comments} />
-          <div className="flex flex-col justify-between items-center gap-2">
-            <Link href="/" className="text-slate-700 text-xs font-Primary border-solid border rounded-full border-slate-600 hover:border-rose-500 tracking-widest hover:text-rose-500 md:text-base px-5 py-0">
-              Back to Home
-            </Link>
-          </div>
+        <Comments postId={id} initialComments={comments} />
+        <div className="post-end">
+          <Link href="/blog" className="pill red">All writings</Link>
         </div>
       </article>
     </PageShell>

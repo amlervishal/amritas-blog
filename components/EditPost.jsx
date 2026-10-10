@@ -102,35 +102,34 @@ const EditPost = () => {
   }
 
   if (error) {
-    return <div className="text-red-500">{error}</div>;
+    return <div className="form-error">{error}</div>;
   }
 
   
 
   return (
-    <div className="container mx-auto px-4">
-      <h1 className="text-3xl font-Primary font-medium text-center mb-4">Edit Post</h1>
+    <div className="form-page">
+      <p className="kicker red">Writing desk</p>
+      <h1>Edit Post</h1>
       
-      <form onSubmit={handleSubmit} className="space-y-4">
+      <form onSubmit={handleSubmit} style={{ display: "grid", gap: 24 }}>
         <div>
-          <label htmlFor="title" className="block mb-1">Title</label>
+          <label htmlFor="title">Title</label>
           <input
             type="text"
             id="title"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="w-full p-2 border rounded"
             required
           />
         </div>
         <div>
-          <label htmlFor="imageUrl" className="block mb-1">Image URL</label>
+          <label htmlFor="imageUrl">Image URL</label>
           <input
             type="url"
             id="imageUrl"
             value={imageUrl}
             onChange={(e) => setImageUrl(e.target.value)}
-            className="w-full p-2 border rounded"
             placeholder="https://example.com/image.jpg"
           />
         </div>
@@ -139,54 +138,48 @@ const EditPost = () => {
             <img 
               src={imageUrl} 
               alt="Post preview" 
-              className="w-full h-64 object-cover rounded-lg"
+              style={{ width: "100%", height: 256, objectFit: "cover" }}
             />
           </div>
         )}
         <div>
-          <label htmlFor="content" className="block mb-1">Content</label>
+          <label htmlFor="content">Content</label>
 
           {/* Editor Toolbar */}
-          <div className="border border-gray-300 border-b-0 rounded-t-lg bg-gray-50 p-2 flex gap-2">
+          <div className="editor-bar">
             <button
               type="button"
               onClick={() => applyFormat('bold')}
-              className="px-3 py-1 border rounded text-sm hover:bg-gray-200 font-bold"
             >
               B
             </button>
             <button
               type="button"
               onClick={() => applyFormat('italic')}
-              className="px-3 py-1 border rounded text-sm hover:bg-gray-200 italic"
             >
               I
             </button>
             <button
               type="button"
               onClick={() => applyFormat('underline')}
-              className="px-3 py-1 border rounded text-sm hover:bg-gray-200 underline"
             >
               U
             </button>
             <button
               type="button"
               onClick={() => applyFormat('formatBlock', 'h1')}
-              className="px-3 py-1 border rounded text-sm hover:bg-gray-200"
             >
               H1
             </button>
             <button
               type="button"
               onClick={() => applyFormat('formatBlock', 'h2')}
-              className="px-3 py-1 border rounded text-sm hover:bg-gray-200"
             >
               H2
             </button>
             <button
               type="button"
               onClick={() => applyFormat('insertUnorderedList')}
-              className="px-3 py-1 border rounded text-sm hover:bg-gray-200"
             >
               • List
             </button>
@@ -196,19 +189,19 @@ const EditPost = () => {
           <ContentEditable
             html={content}
             onChange={handleContentChange}
-            className="w-full p-3 border border-gray-300 rounded-b-lg font-Primary text-sm min-h-[300px] focus:outline-none focus:border-blue-500"
+            className=""
             style={{ minHeight: '300px' }}
             placeholder="Write your content here..."
           />
         </div>
-        <div className="flex justify-between pt-8">
-          <button type="submit" className="bg-green-700 font-Primary text-sm text-white px-4 py-2 rounded-full">
+        <div className="form-actions" style={{ justifyContent: "space-between" }}>
+          <button type="submit" className="pill red">
             Update Post
           </button>
           <button 
             type="button" 
             onClick={handleDelete} 
-            className="bg-rose-600 font-Primary text-sm text-white px-4 py-2 rounded-full"
+            className="pill"
           >
             Delete Post
           </button>

@@ -1,26 +1,27 @@
 import './globals.css'
-import { Jost, Playwrite_CU } from 'next/font/google'
+import { Playfair_Display, Cormorant_Garamond } from 'next/font/google'
 import { AuthProvider } from '../hooks/useUser'
 import { SITE_URL, SITE_NAME, SITE_DESCRIPTION, DEFAULT_OG_IMAGE, AUTHOR_NAME } from '../lib/site'
 
-const jost = Jost({
+const playfair = Playfair_Display({
   subsets: ['latin'],
-  style: ['normal', 'italic'],
+  weight: ['400', '600'],
   display: 'swap',
-  variable: '--font-jost',
+  variable: '--font-playfair',
 })
 
-// Display font used only for logo/headings; no latin subset metadata available, so don't preload it.
-const playwrite = Playwrite_CU({
-  weight: 'variable',
+const cormorant = Cormorant_Garamond({
+  subsets: ['latin'],
+  weight: ['500', '600', '700'],
+  style: ['normal', 'italic'],
   display: 'swap',
-  preload: false,
-  variable: '--font-playwrite',
+  variable: '--font-cormorant',
 })
 
 export const viewport = {
   width: 'device-width',
   initialScale: 1,
+  themeColor: '#f3eadb',
 }
 
 export const metadata = {
@@ -57,8 +58,9 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en" className={`${jost.variable} ${playwrite.variable}`}>
+    <html lang="en" className={`${playfair.variable} ${cormorant.variable}`}>
       <body>
+        <a href="#main" className="sr-skip">Skip to content</a>
         <AuthProvider>{children}</AuthProvider>
       </body>
     </html>

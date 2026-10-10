@@ -59,81 +59,74 @@ const CreatePost = () => {
 
 
   return (
-    <div className="container mx-auto px-4">
-      <h1 className="text-3xl font-Primary font-semibold mb-4">Create New Post</h1>
-      {error && <p className="text-red-500 mb-4">{error}</p>}
-      <form onSubmit={handleSubmit} className="space-y-4 py-2">
+    <div className="form-page">
+      <p className="kicker red">Writing desk</p>
+      <h1>Create New Post</h1>
+      {error && <p className="form-error">{error}</p>}
+      <form onSubmit={handleSubmit} style={{ display: "grid", gap: 24 }}>
       <div>
-          <label htmlFor="title" className="block font-Primary mb-1">Title</label>
+          <label htmlFor="title">Title</label>
           <input
             type="text"
             id="title"
             value={title}
             onChange={(e) => setTitle(e.target.value)}
-            className="w-full p-2 border rounded"
             required
           />
         </div>
         <div>
-          <label htmlFor="imageUrl" className="block font-Primary mb-1">Image URL</label>
+          <label htmlFor="imageUrl">Image URL</label>
           <input
             type="url"
             id="imageUrl"
             value={imageUrl}
             onChange={(e) => setImageUrl(e.target.value)}
-            className="w-full p-2 border rounded"
             placeholder="https://example.com/image.jpg"
           />
-          <p className="text-xs text-gray-500 mt-1 font-Primary">
+          <p className="form-hint">
             💡 For Pexels images: Right-click the image → "Copy image address"
             <br />
             Example: https://images.pexels.com/photos/1563356/pexels-photo-1563356.jpeg
           </p>
         </div>
         <div>
-          <label htmlFor="content" className="block font-Primary mb-1">Content</label>
+          <label htmlFor="content">Content</label>
 
           {/* Editor Toolbar */}
-          <div className="border border-gray-300 border-b-0 rounded-t-lg bg-gray-50 p-2 flex gap-2">
+          <div className="editor-bar">
             <button
               type="button"
               onClick={() => applyFormat('bold')}
-              className="px-3 py-1 border rounded text-sm hover:bg-gray-200 font-bold"
             >
               B
             </button>
             <button
               type="button"
               onClick={() => applyFormat('italic')}
-              className="px-3 py-1 border rounded text-sm hover:bg-gray-200 italic"
             >
               I
             </button>
             <button
               type="button"
               onClick={() => applyFormat('underline')}
-              className="px-3 py-1 border rounded text-sm hover:bg-gray-200 underline"
             >
               U
             </button>
             <button
               type="button"
               onClick={() => applyFormat('formatBlock', 'h1')}
-              className="px-3 py-1 border rounded text-sm hover:bg-gray-200"
             >
               H1
             </button>
             <button
               type="button"
               onClick={() => applyFormat('formatBlock', 'h2')}
-              className="px-3 py-1 border rounded text-sm hover:bg-gray-200"
             >
               H2
             </button>
             <button
               type="button"
               onClick={() => applyFormat('insertUnorderedList')}
-              className="px-3 py-1 border rounded text-sm hover:bg-gray-200"
             >
               • List
             </button>
@@ -143,20 +136,20 @@ const CreatePost = () => {
           <ContentEditable
             html={content}
             onChange={handleContentChange}
-            className="w-full p-3 border border-gray-300 rounded-b-lg font-Primary text-sm min-h-[300px] focus:outline-none focus:border-blue-500"
+            className=""
             style={{ minHeight: '300px' }}
             placeholder="Write your content here..."
           />
         </div>
-        <div className="pt-8">
-          <button type="submit" className="text-rose-600 text-xs font-Primary  border-solid border rounded-full border-rose-600 hover:border-rose-500 tracking-widest hover:text-slate-600 md:text-base px-5 py-0">
+        <div className="form-actions">
+          <button type="submit" className="pill red">
             Create Post
           </button>
+          <Link href="/" className="pill">
+            Back to Home
+          </Link>
         </div>
       </form>
-      <Link href="/" className="text-slate-700 text-xs font-Primary  border-solid border rounded-full border-slate-600 hover:border-rose-500 tracking-widest hover:text-rose-500 md:text-base px-5 py-0">
-          Back to Home
-        </Link>
     </div>
   );
 };
