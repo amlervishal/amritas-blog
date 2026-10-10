@@ -2,8 +2,10 @@
 /* eslint-disable no-unused-vars */
 import React, { useState, useEffect, useRef } from 'react';
 import { useParams, useRouter } from 'next/navigation';
-import { getFirestore, doc, getDoc, updateDoc, deleteDoc } from 'firebase/firestore';
-import { getAuth } from 'firebase/auth';
+import { doc, getDoc, updateDoc, deleteDoc } from 'firebase/firestore';
+import { auth, db } from '../utils/firebase';
+import { revalidateSite } from '../app/actions';
+import { cleanMsoContent } from '../lib/content';
 import ContentEditable from 'react-contenteditable';
 import { generateMetaDescription } from "../utils/metaUtils"
 
@@ -16,8 +18,6 @@ const EditPost = () => {
   const [isLoading, setIsLoading] = useState(true);
   const { id } = useParams();
   const router = useRouter();
-  const auth = getAuth();
-  const db = getFirestore();
 
   useEffect(() => {
     const fetchPost = async () => {
@@ -40,7 +40,7 @@ const EditPost = () => {
       }
     };
     fetchPost();
-  }, [id, db]);
+  }, [id]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();
@@ -51,22 +51,19 @@ const EditPost = () => {
         return;
       }
 
-      // Debug: Log what we're trying to save
-      console.log('Saving content:', content);
-      console.log('Content type:', typeof content);
-      console.log('Content length:', content?.length);
-
+      const cleanContent = cleanMsoContent(content);
       const docRef = doc(db, 'posts', id);
       await updateDoc(docRef, {
         title,
-        content,
+        content: cleanContent,
         imageUrl,
         updatedAt: new Date(),
         // Update meta information
         metaTitle: title,
-        metaDescription: generateMetaDescription(content),
+        metaDescription: generateMetaDescription(cleanContent),
         metaImage: imageUrl
       });
+      await revalidateSite(id).catch(() => {});
       router.push(`/post/${id}`);
     } catch (err) {
       setError('An error occurred while updating the post');
@@ -83,6 +80,7 @@ const EditPost = () => {
           return;
         }
         await deleteDoc(doc(db, 'posts', id));
+        await revalidateSite(id).catch(() => {});
         router.push('/');
       } catch (err) {
         setError('An error occurred while deleting the post');

@@ -1,4 +1,3 @@
-'use client'
 /* eslint-disable no-unused-vars */
 import React from "react";
 
@@ -12,8 +11,12 @@ const About = () => {
 
       <img
         className="max-w-80 rounded-xl object-cover drop-shadow-lg"
-        src="/amrita.png"
-        alt="Dr. Amrita Vohra"
+        src="/amrita.jpg"
+        width={640}
+        height={853}
+        fetchPriority="high"
+        decoding="async"
+        alt="Portrait of Dr. Amrita Vohra, educator and author of Pin Drop Silence"
       />
 
       <p className="px-5 md:px-20 lg:px-64 font-Primary text-sm mb-4">

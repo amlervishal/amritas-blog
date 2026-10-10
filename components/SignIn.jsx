@@ -2,12 +2,12 @@
 /* eslint-disable no-unused-vars */
 import React, { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { getAuth, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
+import { signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
+import { auth } from '../utils/firebaseAuth';
 
 const SignIn = () => {
   const [error, setError] = useState('');
   const router = useRouter();
-  const auth = getAuth();
 
   const handleGoogleSignIn = async () => {
     const provider = new GoogleAuthProvider();

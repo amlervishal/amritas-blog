@@ -1,53 +1,54 @@
 'use client'
 import { useState, useEffect } from 'react';
-import { collection, addDoc, getDocs } from 'firebase/firestore';
-import { db } from '../utils/firebase.js';
+import { useUser } from '../hooks/useUser';
 
-const Comments = ({ postId, user }) => {
-  const [comments, setComments] = useState([]);
+const PROJECT = 'pindropsilence-26bda';
+const RUN_QUERY = `https://firestore.googleapis.com/v1/projects/${PROJECT}/databases/(default)/documents:runQuery`;
+
+// Light-weight refresh over REST (no Firebase SDK) so a cached page never hides new comments.
+async function fetchFreshComments(postId) {
+  const res = await fetch(RUN_QUERY, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      structuredQuery: {
+        from: [{ collectionId: 'comments' }],
+        where: { fieldFilter: { field: { fieldPath: 'postId' }, op: 'EQUAL', value: { stringValue: postId } } },
+      },
+    }),
+  });
+  if (!res.ok) throw new Error('comments fetch failed');
+  const rows = await res.json();
+  return rows
+    .filter((r) => r.document)
+    .map((r) => {
+      const f = r.document.fields || {};
+      const createdAt = f.createdAt?.timestampValue || null;
+      return {
+        id: r.document.name.split('/').pop(),
+        authorName: f.authorName?.stringValue || 'Anonymous',
+        content: f.content?.stringValue || '',
+        createdAt,
+        date: createdAt ? new Date(createdAt).toLocaleDateString() : '',
+      };
+    })
+    .sort((a, b) => new Date(b.createdAt || 0) - new Date(a.createdAt || 0));
+}
+
+// initialComments are server-rendered (so they are in the HTML); we refresh them on mount.
+const Comments = ({ postId, initialComments = [] }) => {
+  const user = useUser();
+  const [comments, setComments] = useState(initialComments);
   const [newComment, setNewComment] = useState('');
   const [loading, setLoading] = useState(false);
-  const [fetchingComments, setFetchingComments] = useState(true);
 
-  // Fetch comments for this post
   useEffect(() => {
-    // console.log('Comments useEffect - postId:', postId);
-    if (!postId) {
-      // console.log('No postId provided');
-      setFetchingComments(false);
-      return;
-    }
-
-    const fetchComments = async () => {
-      try {
-        // Simplified approach - get all comments and filter client-side
-        const commentsCollection = collection(db, 'comments');
-        const querySnapshot = await getDocs(commentsCollection);
-
-        const allComments = querySnapshot.docs.map(doc => ({
-          id: doc.id,
-          ...doc.data()
-        }));
-
-        // Filter for this specific post
-        const postComments = allComments.filter(comment => comment.postId === postId);
-
-        // Sort manually by createdAt
-        postComments.sort((a, b) => {
-          const aTime = a.createdAt?.toDate ? a.createdAt.toDate() : new Date(a.createdAt);
-          const bTime = b.createdAt?.toDate ? b.createdAt.toDate() : new Date(b.createdAt);
-          return bTime - aTime; // newest first
-        });
-
-        setComments(postComments);
-      } catch (error) {
-        // console.error('Error fetching comments:', error);
-      } finally {
-        setFetchingComments(false);
-      }
-    };
-
-    fetchComments();
+    if (!postId) return;
+    let cancelled = false;
+    fetchFreshComments(postId)
+      .then((list) => { if (!cancelled) setComments(list); })
+      .catch(() => {});
+    return () => { cancelled = true; };
   }, [postId]);
 
   const handleSubmit = async (e) => {
@@ -56,23 +57,26 @@ const Comments = ({ postId, user }) => {
 
     setLoading(true);
     try {
+      // Firestore SDK is only downloaded when someone actually posts a comment
+      const [{ collection, addDoc }, { db }] = await Promise.all([
+        import('firebase/firestore'),
+        import('../utils/firebaseDb'),
+      ]);
+      const createdAt = new Date();
       const commentData = {
         content: newComment,
         authorName: user.displayName || user.email,
         authorId: user.uid,
-        createdAt: new Date(),
+        createdAt,
         postId: postId
       };
 
       const docRef = await addDoc(collection(db, 'comments'), commentData);
 
-      // Add to local state for immediate UI update
-      const newCommentWithId = {
-        id: docRef.id,
-        ...commentData
-      };
-
-      setComments([newCommentWithId, ...comments]);
+      setComments([
+        { id: docRef.id, authorName: commentData.authorName, content: commentData.content, createdAt: createdAt.toISOString(), date: createdAt.toLocaleDateString() },
+        ...comments,
+      ]);
       setNewComment('');
     } catch (error) {
       // console.error('Error adding comment:', error);
@@ -83,7 +87,7 @@ const Comments = ({ postId, user }) => {
 
   return (
     <div className="mt-8 pt-8 border-t border-gray-200">
-      <h3 className="text-xl font-Primary font-semibold mb-4">Comments</h3>
+      <h2 className="text-xl font-Primary font-semibold mb-4">Comments</h2>
 
       {/* Comment form */}
       {user ? (
@@ -92,6 +96,7 @@ const Comments = ({ postId, user }) => {
             value={newComment}
             onChange={(e) => setNewComment(e.target.value)}
             placeholder="Write a comment..."
+            aria-label="Write a comment"
             className="w-full p-3 border border-gray-300 rounded-lg font-Primary text-sm"
             rows="3"
           />
@@ -122,33 +127,20 @@ const Comments = ({ postId, user }) => {
 
       {/* Comments list */}
       <div className="space-y-4">
-        {fetchingComments ? (
-          <p className="text-gray-500 font-Primary text-sm">Loading comments...</p>
-        ) : comments.length === 0 ? (
+        {comments.length === 0 ? (
           <p className="text-gray-500 font-Primary text-sm">No comments yet. Be the first to comment!</p>
         ) : (
-          comments.map((comment, index) => (
-              <div key={comment.id || index} className="bg-gray-50 p-4 rounded-lg mb-4 border max-w-full">
-                <div className="flex justify-between items-start mb-2">
-                  <span className="font-Primary font-medium text-sm text-gray-800">
-                    {comment.authorName || comment.author || 'Anonymous'}
-                  </span>
-                  <span className="text-gray-500 font-Primary text-xs flex-shrink-0 ml-4">
-                    {comment.createdAt?.toDate ?
-                      comment.createdAt.toDate().toLocaleDateString() :
-                      comment.createdAt instanceof Date ?
-                        comment.createdAt.toLocaleDateString() :
-                        typeof comment.createdAt === 'string' ?
-                          comment.createdAt :
-                          'Just now'
-                    }
-                  </span>
-                </div>
-                <p className="text-gray-700 font-Primary text-sm break-words">
-                  {comment.content || comment.text || 'No comment text'}
-                </p>
+          comments.map((comment) => (
+            <div key={comment.id} className="bg-gray-50 p-4 rounded-lg mb-4 border max-w-full">
+              <div className="flex justify-between items-start mb-2">
+                <span className="font-Primary font-medium text-sm text-gray-800">{comment.authorName}</span>
+                <span className="text-gray-500 font-Primary text-xs flex-shrink-0 ml-4" suppressHydrationWarning>
+                  {comment.date || 'Just now'}
+                </span>
               </div>
-            ))
+              <p className="text-gray-700 font-Primary text-sm break-words">{comment.content || 'No comment text'}</p>
+            </div>
+          ))
         )}
       </div>
     </div>

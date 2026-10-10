@@ -3,8 +3,10 @@
 import React, { useState, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { getFirestore, collection, addDoc } from 'firebase/firestore';
-import { getAuth } from 'firebase/auth';
+import { collection, addDoc } from 'firebase/firestore';
+import { auth, db } from '../utils/firebase';
+import { revalidateSite } from '../app/actions';
+import { cleanMsoContent } from '../lib/content';
 import ContentEditable from 'react-contenteditable';
 import { generateMetaDescription } from "../utils/metaUtils"
 
@@ -14,8 +16,6 @@ const CreatePost = () => {
   const [imageUrl, setImageUrl] = useState('');
   const [error, setError] = useState('');
   const router = useRouter();
-  const auth = getAuth();
-  const db = getFirestore();
 
   const applyFormat = (command, value = null) => {
     document.execCommand(command, false, value);
@@ -33,17 +33,21 @@ const CreatePost = () => {
         setError('You must be logged in to create a post');
         return;
       }
+      // Strip pasted MS Word junk before saving: smaller documents, faster page loads
+      const cleanContent = cleanMsoContent(content);
       const docRef = await addDoc(collection(db, 'posts'), {
         title,
-        content,
+        content: cleanContent,
         imageUrl,
         authorId: user.uid,
         createdAt: new Date(),
         // Add meta information
         metaTitle: title,
-        metaDescription: generateMetaDescription(content),
+        metaDescription: generateMetaDescription(cleanContent),
         metaImage: imageUrl
       });
+      // Purge cached home/post/sitemap so the new post shows up immediately
+      await revalidateSite(docRef.id).catch(() => {});
       router.push(`/post/${docRef.id}`);
     } catch (err) {
       setError('An error occurred while creating the post');

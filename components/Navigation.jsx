@@ -3,15 +3,16 @@
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
 import Link from 'next/link';
-import { getAuth, signOut } from 'firebase/auth';
+import { useUser } from '../hooks/useUser';
 
-const Navigation = ({ user }) => {
+const Navigation = () => {
+  const user = useUser();
   const router = useRouter();
-  const auth = getAuth();
   const [isMenuOpen, setIsMenuOpen] = useState(false);
 
   const handleSignOut = async () => {
     try {
+      const [{ signOut }, { auth }] = await Promise.all([import('firebase/auth'), import('../utils/firebaseAuth')]);
       await signOut(auth);
       router.push('/');
       setIsMenuOpen(false); // Close menu after sign out
@@ -30,7 +31,7 @@ const Navigation = ({ user }) => {
         <div className="flex items-center justify-between">
           {/* Left - Pin Icon */}
           <div className="flex items-center">
-            <Link href="/" className="flex items-center space-x-2 text-gray-600 hover:text-gray-700 transition-colors">
+            <Link href="/" aria-label="Pin Drop Silence home" className="flex items-center space-x-2 text-gray-600 hover:text-gray-700 transition-colors">
               <svg className="w-5 h-5 rotate-45" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" viewBox="0 0 24 24">
                 <path d="M12 17v5"/>
                 <path d="M9 10.76a2 2 0 0 1-1.11 1.79l-1.78.9A2 2 0 0 0 5 15.24V16a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-.76a2 2 0 0 0-1.11-1.79l-1.78-.9A2 2 0 0 1 15 10.76V7a1 1 0 0 1 1-1 2 2 0 0 0 0-4H8a2 2 0 0 0 0 4 1 1 0 0 1 1 1z"/>
@@ -52,6 +53,8 @@ const Navigation = ({ user }) => {
           <div className="relative">
             <button
               onClick={toggleMenu}
+              aria-label="Menu"
+              aria-expanded={isMenuOpen}
               className="flex items-center justify-center w-8 h-8 rounded-lg hover:bg-gray-100 transition-colors"
             >
               <div className="flex flex-col space-y-1">

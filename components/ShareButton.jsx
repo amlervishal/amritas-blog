@@ -2,24 +2,16 @@
 
 import { useState } from 'react';
 
-const ShareButton = ({ postId, title, description, imageUrl }) => {
+const ShareButton = ({ postId, title }) => {
   const [showShareMenu, setShowShareMenu] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
 
-  const postUrl = `${typeof window !== 'undefined' ? window.location.origin : ''}/post/${postId}`;
-  const encodedUrl = encodeURIComponent(postUrl);
-  const encodedTitle = encodeURIComponent(title);
-  const encodedDescription = encodeURIComponent(description);
-
-  const shareLinks = {
-    twitter: `https://twitter.com/intent/tweet?text=${encodedTitle}&url=${encodedUrl}`,
-    facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`,
-    instagram: postUrl // Instagram doesn't support direct URL sharing, so we'll copy the link
-  };
+  // Computed lazily (click time) so server HTML and client render match
+  const getPostUrl = () => `${window.location.origin}/post/${postId}`;
 
   const handleCopyLink = async () => {
     try {
-      await navigator.clipboard.writeText(postUrl);
+      await navigator.clipboard.writeText(getPostUrl());
       setCopySuccess(true);
       setTimeout(() => setCopySuccess(false), 2000);
     } catch (err) {
@@ -28,6 +20,13 @@ const ShareButton = ({ postId, title, description, imageUrl }) => {
   };
 
   const handleShare = (platform) => {
+    const postUrl = getPostUrl();
+    const encodedUrl = encodeURIComponent(postUrl);
+    const encodedTitle = encodeURIComponent(title);
+    const shareLinks = {
+      twitter: `https://twitter.com/intent/tweet?text=${encodedTitle}&url=${encodedUrl}`,
+      facebook: `https://www.facebook.com/sharer/sharer.php?u=${encodedUrl}`,
+    };
     if (platform === 'instagram') {
       handleCopyLink();
     } else {
@@ -42,6 +41,7 @@ const ShareButton = ({ postId, title, description, imageUrl }) => {
         onClick={() => setShowShareMenu(!showShareMenu)}
         className="text-rose-600 hover:text-rose-700 transition-colors p-2 rounded-full hover:bg-rose-50"
         title="Share this post"
+        aria-label="Share this post"
       >
         <svg
           className="w-5 h-5"

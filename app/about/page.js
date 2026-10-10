@@ -1,20 +1,34 @@
-'use client'
-
-import Navigation from '../../components/Navigation'
-import Footer from '../../components/Footer'
+import PageShell from '../../components/PageShell'
 import About from '../../components/About'
-import { useUser } from '../../hooks/useUser'
+import JsonLd from '../../components/JsonLd'
+import { SITE_URL, AUTHOR_NAME } from '../../lib/site'
+
+export const metadata = {
+  title: `About ${AUTHOR_NAME}`,
+  description:
+    'Dr. Amrita Vohra is an educator, researcher and author with almost 30 years in education, currently COO & Director Education at GEMS Education, India.',
+  alternates: { canonical: '/about' },
+  openGraph: { type: 'profile', url: '/about', images: [{ url: `${SITE_URL}/amrita.jpg`, width: 640, height: 853, alt: AUTHOR_NAME }] },
+}
 
 export default function AboutPage() {
-  const user = useUser()
-
   return (
-    <div className="flex flex-col min-h-screen bg-white bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:16px_16px]">
-      <Navigation user={user} />
-      <main className="flex-grow container mx-auto px-4 pt-24 pb-24">
-        <About />
-      </main>
-      <Footer />
-    </div>
+    <PageShell>
+      <JsonLd
+        data={{
+          '@context': 'https://schema.org',
+          '@type': 'ProfilePage',
+          mainEntity: {
+            '@type': 'Person',
+            '@id': `${SITE_URL}/#person`,
+            name: AUTHOR_NAME,
+            image: `${SITE_URL}/amrita.jpg`,
+            jobTitle: 'COO & Director Education, GEMS Education, India',
+            url: `${SITE_URL}/about`,
+          },
+        }}
+      />
+      <About />
+    </PageShell>
   )
 }
