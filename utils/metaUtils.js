@@ -1,3 +1,5 @@
+import { htmlToText } from '../lib/content';
+
 /**
  * Utility functions for generating meta information for blog posts
  */
@@ -11,10 +13,8 @@
 export const generateMetaDescription = (content, maxLength = 160) => {
   if (!content) return '';
 
-  // Strip HTML tags
-  const tempElement = document.createElement('div');
-  tempElement.innerHTML = content;
-  const textContent = tempElement.textContent || tempElement.innerText || '';
+  // Strip HTML (and pasted MS Word junk) without touching the DOM
+  const textContent = htmlToText(content);
 
   // Clean up whitespace and newlines
   const cleanText = textContent
@@ -62,10 +62,8 @@ export const generateSlug = (title) => {
 export const generateKeywords = (content, maxKeywords = 10) => {
   if (!content) return '';
 
-  // Strip HTML tags
-  const tempElement = document.createElement('div');
-  tempElement.innerHTML = content;
-  const textContent = tempElement.textContent || tempElement.innerText || '';
+  // Strip HTML (and pasted MS Word junk) without touching the DOM
+  const textContent = htmlToText(content);
 
   // Common stop words to filter out
   const stopWords = new Set([

@@ -1,6 +1,3 @@
-@import url('https://fonts.googleapis.com/css2?family=Jost:ital,wght@0,100..900;1,100..900&family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Playwrite+CU:wght@100..400&display=swap');
-
 @import "tailwindcss";
 
 /* Import the exact CSS from the original project */
@@ -11,7 +8,7 @@ html {
 
 /* Ensure fonts are properly loaded */
 .font-Primary {
-  font-family: 'Jost', sans-serif;
+  font-family: var(--font-jost), 'Jost', sans-serif;
 }
 
 .font-Secondary {
@@ -19,7 +16,7 @@ html {
 }
 
 .font-Logo {
-  font-family: 'Playwrite CU', cursive;
+  font-family: var(--font-playwrite), 'Playwrite CU', cursive;
 }
 
 /* Custom styles to match original */
