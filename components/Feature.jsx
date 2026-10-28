@@ -21,7 +21,7 @@ export default function Feature({ post }) {
           <Link href={`/post/${post.id}`} style={{ textDecoration: 'none' }}>{post.title}</Link>
         </h2>
         <p className="lede">{post.excerpt}</p>
-        <Link href={`/post/${post.id}`} className="pill">Read the essay</Link>
+        <Link href={`/post/${post.id}`} className="pill">Read now</Link>
       </div>
     </section>
   )
