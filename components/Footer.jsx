@@ -6,6 +6,13 @@ const SOCIAL = [
   { label: 'Facebook', href: 'https://www.facebook.com/dramrita5/', viewBox: '0 0 448 512', d: 'M400 32H48A48 48 0 000 80v352a48 48 0 0048 48h137.25V327.69h-63V256h63v-54.64c0-62.15 37-96.48 93.67-96.48 27.14 0 55.52 4.84 55.52 4.84v61h-31.27c-30.81 0-40.42 19.12-40.42 38.73V256h68.78l-11 71.69h-57.78V480H400a48 48 0 0048-48V80a48 48 0 00-48-48z' },
 ]
 
+// Related sites from KVA Labs, which built and runs this blog.
+const RELATED = [
+  { name: 'LevelReads', line: 'a reading app for children 5 to 14, from an idea by Dr. Vohra', href: 'https://levelreads.app' },
+  { name: 'Readoye', line: 'the digital library for Indian schools', href: 'https://readoye.com' },
+  { name: 'TimeIt360', line: 'school timetable software for Indian schools', href: 'https://www.timeit360.com' },
+]
+
 // Server component (no hooks): works on public pages and inside the client-rendered editor pages.
 const Footer = () => {
   return (
@@ -30,6 +37,18 @@ const Footer = () => {
             </svg>
           </a>
         ))}
+      </div>
+      <div className="related" role="navigation" aria-label="Related sites">
+        <p>
+          Site by <a href="https://www.kvalabs.com">KVA Labs, a software studio for schools and families</a>. Also from KVA Labs:
+        </p>
+        <ul>
+          {RELATED.map((r) => (
+            <li key={r.href}>
+              <a href={r.href}>{r.name}</a>, {r.line}
+            </li>
+          ))}
+        </ul>
       </div>
       <small>&copy; {new Date().getFullYear()} Pin Drop Silence. All rights reserved.</small>
     </footer>
