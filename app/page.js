@@ -48,7 +48,7 @@ export default async function HomePage() {
         '@id': `${SITE_URL}/#person`,
         name: AUTHOR_NAME,
         url: `${SITE_URL}/about`,
-        jobTitle: 'COO & Director Education, GEMS Education, India',
+        jobTitle: 'Chief Learning Officer, GEMS Education',
         sameAs: [
           'https://in.linkedin.com/in/dr-amrita-vohra-a4625b91',
           'https://www.instagram.com/amrita.aneja/',

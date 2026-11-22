@@ -36,7 +36,7 @@ const Posts = ({ posts }) => {
             <h3><Link href={`/post/${post.id}`}>{post.title}</Link></h3>
             <hr className="rule" />
             <p className="excerpt">{post.excerpt}</p>
-            <Link href={`/post/${post.id}`} className="more" aria-label={`Read ${post.title}`}>Read the essay</Link>
+            <Link href={`/post/${post.id}`} className="more" aria-label={`Read ${post.title}`}>Read more</Link>
           </li>
         )
       })}
