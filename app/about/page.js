@@ -6,7 +6,7 @@ import { SITE_URL, AUTHOR_NAME } from '../../lib/site'
 export const metadata = {
   title: `About ${AUTHOR_NAME}`,
   description:
-    'Dr. Amrita Vohra is an educator, researcher and author with almost 30 years in education, currently COO & Director Education at GEMS Education, India.',
+    "Dr. Amrita Vohra, Chief Learning Officer, GEMS Education, leads education for all GEMS initiatives in India.",
   alternates: { canonical: '/about' },
   openGraph: { type: 'profile', url: '/about', images: [{ url: `${SITE_URL}/amrita.jpg`, width: 640, height: 853, alt: AUTHOR_NAME }] },
 }
@@ -23,7 +23,7 @@ export default function AboutPage() {
             '@id': `${SITE_URL}/#person`,
             name: AUTHOR_NAME,
             image: `${SITE_URL}/amrita.jpg`,
-            jobTitle: 'COO & Director Education, GEMS Education, India',
+            jobTitle: 'Chief Learning Officer, GEMS Education',
             url: `${SITE_URL}/about`,
           },
         }}

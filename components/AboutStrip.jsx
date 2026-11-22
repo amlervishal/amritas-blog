@@ -17,11 +17,7 @@ export default function AboutStrip() {
         <div>
           <p className="kicker red">The writer</p>
           <h2 id="about-strip-title" className="display">Dr. Amrita Vohra</h2>
-          <p>
-            Almost thirty years in education: teacher, principal, researcher and author, now COO and Director
-            Education at GEMS Education, India. A PhD in English Literature, a Bharatanatyam dancer and a theatre
-            professional, she writes here about classrooms, children, and the quiet moments in between.
-          </p>
+          <p>{"Dr. Amrita Vohra, Chief Learning Officer, GEMS Education, leads education for all GEMS initiatives in India. She brings over three decades of transformative educational leadership to K–12 schools. A PhD in English Literature, certified Cambridge and IB school leader, Program Leader for Cambridge Professional Development Qualifications, an artist, an author, and a passionate educator, she moves seamlessly between the worlds of scholarship, leadership, and the arts. A theatre professional and Bharatanatyam dancer, she views learning as choreography, an intricate interplay of intellect, empathy, and creative imagination."}</p>
           <Link href="/about" className="pill red" style={{ marginTop: 14 }}>More about her</Link>
         </div>
       </div>
